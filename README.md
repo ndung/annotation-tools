@@ -1,5 +1,4 @@
 # annotation-tools
-Annotation Tools
 
 requirements:
 - apache server
