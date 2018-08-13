@@ -1,5 +1,5 @@
 <?php
-
+date_default_timezone_set('Asia/Jakarta');
 // change the following paths if necessary
 $yii=dirname(__FILE__).'/../../../yii/framework/yii.php';
 $config=dirname(__FILE__).'/protected/config/web-main-enviroment.php';
