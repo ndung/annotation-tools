@@ -221,13 +221,13 @@ function initTreeStructure() {
 
                                 }
 
-                                if (isValid) {
-                                    if (child.parent.ID !== parent.ID) {
+                                //if (isValid) {
+                                //    if (child.parent.ID !== parent.ID) {
                                         child.changeParent(parent, index);
-                                    }
-                                } else {
-                                    alert("Perpindahan seperti itu dilarang oleh sistem");
-                                }
+                                //    }
+                                //} else {
+                                //    alert("Perpindahan seperti itu dilarang oleh sistem");
+                                //}
 
 
                                 $(this).attr('child-id', null);

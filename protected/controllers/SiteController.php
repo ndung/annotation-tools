@@ -44,10 +44,33 @@ class SiteController extends ControllerCore {
                         'class' => 'btn btn-default btn-xs action-clear-workspace'
                     ]
                 ],
+				[
+                            'label' => 'Unduh',
+                            'symbol' => 'glyphicon glyphicon-save',
+                            'htmlOptions' => [
+                                'class' => 'btn btn-default btn-xs action-download'
+                            ]
+                        ],
+                        [
+                            'label' => 'Simpan ini',
+                            'symbol' => 'glyphicon glyphicon-cloud-upload',
+                            'htmlOptions' => [
+                                'method' => 'current',
+                                'class' => 'btn btn-default btn-xs action-save'
+                            ]
+                        ],
+                        [
+                            'label' => 'Simpan semua',
+                            'symbol' => 'glyphicon glyphicon-cloud-upload',
+                            'htmlOptions' => [
+                                'method' => 'all',
+                                'class' => 'btn btn-default btn-xs action-save'
+                            ]
+                        ]
             ];
         }
-        if (UserWeb::instance()->user()->verifiedUser) {
-            $this->data['contextMenu'] = CMap::mergeArray($this->data['contextMenu'], [
+        else {
+            $this->data['contextMenu'] = [
                         [
                             'label' => 'Unduh',
                             'symbol' => 'glyphicon glyphicon-save',
@@ -71,7 +94,7 @@ class SiteController extends ControllerCore {
                                 'class' => 'btn btn-default btn-xs action-save'
                             ]
                         ]
-            ]);
+            ];
         }
         $this->renderJS([
             'write' => $this->createUrl('write'),

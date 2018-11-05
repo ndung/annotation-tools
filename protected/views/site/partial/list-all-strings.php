@@ -8,7 +8,7 @@
         class="list-group-item item-document" 
         document-id="<?= $solution->ID ?>" 
         title="Modifikasi Terakhir: <?= $solution->dateModified ?>" 
-
+		document-sentence="<?= $solution->sentence ?>" 
         document-parse="<?= rawurlencode($solution->string) ?>"
         data-placement="right">
 

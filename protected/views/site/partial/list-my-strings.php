@@ -10,6 +10,7 @@
         <?php if ($this->userSolution($document)): ?>
             title="Modifikasi Terakhir: <?= $this->userSolution($document, $user)->dateModified ?>" 
         <?php endif; ?>
+		document-sentence="<?= $document->sentence ?>" 
         document-parse="<?= rawurlencode($this->userSolution($document, $user) ? $this->userSolution($document, $user)->string : $document->string) ?>"
         data-placement="right">
 

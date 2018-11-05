@@ -139,7 +139,7 @@
     $(document).ready(function () {
         var loader = $('#modal-explore-mystring').find('.modal-body').html();
         $('[name="documentsID"]').keyup(function () {
-            syncSelection($('#modal-explore-mystring').find('.modal-body'));
+			syncSelection($('#modal-explore-mystring').find('.modal-body'));
         }).change(function () {
             syncSelection($('#modal-explore-mystring').find('.modal-body'));
         });
@@ -150,6 +150,12 @@
                 $('#modal-explore-mystring').modal('hide');
                 saveWorkspaceLocal();
             });
+        });
+		$('.item-document').click(function () {
+			var item = $(this);
+			var documentID = item.attr('document-id');			
+			var sentence = item.attr('document-sentence');
+			$('#modal_detail').html("<label>"+sentence+"</label>");
         });
         $('#modal-explore-mystring').delegate('a[href]', 'click', function () {
             var modal = $('#modal-explore-mystring');
@@ -164,7 +170,7 @@
             });
             return false;
         }).delegate('.item-document-cloud', 'click', function () {
-            var item = $(this);
+			var item = $(this);
             item.toggleClass('open');
             var input = $('[name="documentsID"]');
             var string = input.val();

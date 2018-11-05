@@ -30,7 +30,7 @@
     <div class="">
         <section id="description-corpus" class="container content-section text-center" style="padding-top: 15px;">
             <div class="row">
-                <div class="col-lg-8 col-lg-offset-2">
+                <div class="col-lg-8 col-lg-offset-0">
                     <fieldset>
                         <legend>
                             Edit Parse Tree
@@ -47,6 +47,14 @@
                             </button>
                         </section>
                     </section>
+                </div>
+            </div>
+        </section>
+		
+		<section id="string-corpus" class="container content-section text-center" style="padding-top: 15px;">
+            <div class="row">
+                <div id='modal_detail' class="col-lg-8 col-lg-offset-0">
+					<label><?php echo $documents[0]->sentence ?> </label>                    
                 </div>
             </div>
         </section>

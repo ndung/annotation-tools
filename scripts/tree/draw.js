@@ -35,7 +35,12 @@ function drawTree(bag) {
     renderer.zoom(false);
 
     // Set up an SVG group so that we can translate the final graph.
-    var svg = d3.select('svg.display'),
+    var svg = d3.select('svg.display')
+				.call(d3.behavior.zoom().on("zoom", function() {
+				 var ev = d3.event;
+				 svg.select("g")
+					.attr("transform", "translate(" + ev.translate + ") scale(" + ev.scale + ")");
+			   })),
             svgGroup = svg.append('g');
 
     // Run the renderer. This is what draws the final graph.
@@ -44,9 +49,9 @@ function drawTree(bag) {
     // Center the graph
     var layoutWidth = layout.graph().width ? layout.graph().width : 2000;
     var layoutHeight = layout.graph().height ? layout.graph().height : 600;
-    svg.attr('width', layoutWidth);
+    svg.attr('width', layoutWidth + 40);
     var xCenterOffset = (svg.attr('width') - layoutWidth) / 2;
-    svgGroup.attr('transform', 'translate(' + xCenterOffset + ', 20)');
+    svgGroup.attr('transform', 'translate(' + xCenterOffset + ', 1)');
     svg.attr('height', layoutHeight + 40);
     $('#svg-wrapper').scrollLeft(lastScrollX);
 }

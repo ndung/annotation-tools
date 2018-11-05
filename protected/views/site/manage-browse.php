@@ -29,6 +29,14 @@
             </div>
         </div>
     </section>
+	
+			<section id="string-corpus" class="container content-section text-center" style="padding-top: 15px;">
+            <div class="row">
+                <div id='modal_detail' class="col-lg-8 col-lg-offset-0">
+					<label><?php echo $documents[0]->sentence ?> </label>                    
+                </div>
+            </div>
+        </section>
 
     <section class="content-section section-option text-center" style="padding-top: 10px !important; padding-right: 10px">
         <div class="row">  
