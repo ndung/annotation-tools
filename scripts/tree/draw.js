@@ -49,9 +49,9 @@ function drawTree(bag) {
     // Center the graph
     var layoutWidth = layout.graph().width ? layout.graph().width : 2000;
     var layoutHeight = layout.graph().height ? layout.graph().height : 600;
-    svg.attr('width', layoutWidth + 40);
+    svg.attr('width', layoutWidth + 300);
     var xCenterOffset = (svg.attr('width') - layoutWidth) / 2;
     svgGroup.attr('transform', 'translate(' + xCenterOffset + ', 1)');
-    svg.attr('height', layoutHeight + 40);
+    svg.attr('height', layoutHeight + 300);
     $('#svg-wrapper').scrollLeft(lastScrollX);
 }

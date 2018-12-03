@@ -8,8 +8,8 @@
         class="list-group-item item-document" 
         document-id="<?= $solution->ID ?>" 
         title="Modifikasi Terakhir: <?= $solution->dateModified ?>" 
-		document-sentence="<?= $solution->sentence ?>" 
-        document-parse="<?= rawurlencode($solution->string) ?>"
+		document-sentence="<?= rawurlencode($solution->sentence) ?>" 
+		document-parse="<?= rawurlencode($solution->string) ?>"
         data-placement="right">
 
         <?php if ($user->moderator): ?>
@@ -18,7 +18,10 @@
             </a>
         <?php endif; ?>
 
-        <a class="content">
+        <?php if ($solution->evaluated==0): ?>
+			<a class="content">
+		<?php endif; ?>
+		
             <span class="label-document-ID">
                 <strong>
                     Kalimat (ID <?= $solution->ID ?> oleh <?= $solution->user->username ?>)
@@ -35,6 +38,9 @@
             <span class="content-string">
                 <?= $solution->sentence ?>
             </span>
-        </a>
+			
+		<?php if ($solution->evaluated==0): ?>
+			</a>
+		<?php endif; ?>
     </li>
 <?php endforeach; ?>

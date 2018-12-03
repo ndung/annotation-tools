@@ -51,6 +51,16 @@
         }
 
     });
+	
+	/**
+     * Simply Reload the browser madafaka~
+     */
+    $('.action-clear-workspace').click(function (e) {
+        if (confirm("Apakah anda yakin mengeluarkan semua dokumen di workspace anda? silahkan simpan dahulu semua sesi anda")) {
+            $.removeCookie('strings-inspect');
+            document.location.reload();
+        }
+    });
 
     /**
      * Document Explorer Handler
@@ -126,6 +136,83 @@
                 body.find('[data-toggle="tooltip"]').tooltip();
             });
         });
+		$('.item-document').click(function () {
+			var item = $(this);		
+			var sentence = item.attr('document-sentence');			
+			$('#modal_detail').html("<label>"+decodeURIComponent(sentence)+"</label>");
+        });
+    });
+	/**
+     * Download handler
+     */
+    $('.action-download').click(function () {
+        var content = [];
+
+        $('.item-document[document-id]').each(function (i, item) {
+            content.push(decodeURIComponent($(item).attr('document-parse')));
+        });
+
+        if (content.length) {
+            var blob = new Blob([content.join('\n')], {type: "text/plain;charset=utf-8"});
+            var now = new Date();
+            var formatDate = now.getFullYear() + "-" + (now.getMonth() + 1) + "-" + now.getDate() + " " + now.getHours() + ":" + now.getMinutes() + ":" + now.getSeconds();
+            var fileName = formatDate + '.bracket';
+            saveAs(blob, fileName);
+        } else {
+            alert('Pastikan ada berkas yang dibuka saat mengunduh. saat ini sistem tidak dapat memberikan berkas karena workspace kosong.');
+        }
     });
 
+    /**
+     * Save handler
+     */
+    $('.action-save').click(function (e) {
+        if (confirm('Apakah anda yakin ingin menyimpan semua Perubahan ini?')) {
+            switch ($(this).attr('method')) {
+                case 'current':
+                    var URL = core.getURL('write', {'stringID': currentNode.attr('document-id')});
+                    $.post(URL, {'value': decodeURIComponent(currentNode.attr('document-parse'))}, function (response) {
+                        alert(response.message);
+                        currentNode.removeClass('bold changed');
+                        currentNode.find('.note').remove();
+                    }).error(function (r) {
+                        console.log(r);
+                    });
+                    break;
+
+                case 'all':
+                    var counter = 0;
+                    var size = $('.item-document.changed').size();
+                    $('.item-document.changed').each(function (i, item) {
+                        var URL = core.getURL('write', {'stringID': $(item).attr('document-id')});
+                        $.post(URL, {'value': decodeURIComponent($(item).attr('document-parse'))}, function (response) {
+                            $(item).removeClass('bold changed');
+                            $(item).find('.note').remove();
+                            counter++;
+                            if (counter >= size) {
+                                alert('Semua sudah tersimpan');
+                            }
+                        }).error(function (r) {
+                            console.log(r);
+                        });
+                    });
+                    break;
+
+                case 'context':
+                    e.preventDefault();
+                    e.stopPropagation();
+                    var counter = 0;
+                    var item = $(this).parents('.item-document');
+                    var URL = core.getURL('write', {'stringID': item.attr('document-id')});
+                    $.post(URL, {'value': decodeURIComponent(item.attr('document-parse'))}, function (response) {
+                        item.removeClass('bold changed');
+                        item.find('.note').remove();
+                        alert('Dokumen sudah tersimpan');
+                    }).error(function (r) {
+                        console.log(r);
+                    });
+                    break;
+            }
+        }
+    });
 }());

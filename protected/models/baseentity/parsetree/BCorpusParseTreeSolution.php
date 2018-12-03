@@ -90,6 +90,13 @@ class BCorpusParseTreeSolution extends BaseModel {
             'criteria' => $criteria,
         ));
     }
+	
+	public function scopes() {
+		return array(
+			'byCorpusParseTreeString' => array('order' => 'corpusParseTreeStringID ASC'),
+			'limit100' => array('limit' => '100'),
+		);
+	}
 
     /**
      * Returns the static model of the specified AR class.

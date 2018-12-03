@@ -126,10 +126,40 @@ class SiteController extends ControllerCore {
                     'class' => 'btn btn-default btn-xs action-toggle-input'
                 ]
             ],
+			[
+                    'label' => 'Kosongkan Workspace',
+                    'symbol' => 'glyphicon glyphicon-star-empty',
+                    'htmlOptions' => [
+                        'class' => 'btn btn-default btn-xs action-clear-workspace'
+                    ]
+                ],
+			[
+				'label' => 'Unduh',
+				'symbol' => 'glyphicon glyphicon-save',
+				'htmlOptions' => [
+					'class' => 'btn btn-default btn-xs action-download'
+					]
+			],
+			[
+				'label' => 'Simpan ini',
+				'symbol' => 'glyphicon glyphicon-cloud-upload',
+				'htmlOptions' => [
+					'method' => 'current',
+					'class' => 'btn btn-default btn-xs action-save'
+					]
+			],
+			[
+				'label' => 'Simpan semua',
+				'symbol' => 'glyphicon glyphicon-cloud-upload',
+				'htmlOptions' => [
+					'method' => 'all',
+					'class' => 'btn btn-default btn-xs action-save'
+					]
+			]
         ];
 
         $this->renderJS([
-            'write' => $this->createUrl('write'),
+            'write' => $this->createUrl('evaluate'),
             'load-explorer' => $this->createUrl('explorerAllString'),
             'load-solutions' => $this->createUrl('solutions'),
                 ], []);
@@ -160,11 +190,15 @@ class SiteController extends ControllerCore {
         $user = $userWeb->user();
         $criteria = new CDbCriteria;
         $criteria->limit = 21;
+		$response = ['message' => 'Sesi anda sudah disimpan di cloud'];
         if ($corpusID) {
+			Yii::app()->request->cookies['corpusID'] = new CHttpCookie('corpusID', $corpusID);
             $criteria->with[] = 'corpusParseTreeString';
             $criteria->compare('corpusParseTreeString.corpusParseTreeID', $corpusID);
+
         }
         if ($userID) {
+			Yii::app()->request->cookies['userID'] = new CHttpCookie('userID', $userID);
             $criteria->compare('userID', $userID);
         }
         if ($stringID) {
@@ -221,6 +255,40 @@ class SiteController extends ControllerCore {
         }
         $this->sendResponse($responseCode, CJSON::encode($response), 'application/json');
     }
+	
+	public function actionEvaluate($stringID) {
+        $responseCode = isset($_POST['value']) ? 200 : 500;
+        $response = null;
+        if ($responseCode === 200) {
+            $userWeb = UserWeb::instance();
+			$solution = CorpusParseTreeSolution::model()->findByAttributes(['ID' => $stringID]);
+			$string = CorpusParseTreeSolution::model()->findByAttributes(['userID' => $userWeb->id, 'corpusParseTreeStringID' => $solution->corpusParseTreeStringID]);
+            /* @var $string CorpusParseTreeSolution */
+            if (!$string) {
+                $string = new CorpusParseTreeSolution;
+                $string->userID = $userWeb->id;
+                $string->corpusParseTreeStringID = $solution->corpusParseTreeStringID;
+            }
+			$string->string = $_POST['value'];
+            $responseCode = $string->save() ? 200 : 500;
+			
+			$solutions = CorpusParseTreeSolution::model()->findAll('corpusParseTreeStringID=:corpusParseTreeStringID', [':corpusParseTreeStringID' => $solution->corpusParseTreeStringID]);
+			if ($solutions){
+				foreach ($solutions as $solutionsID) {
+					$solutionsID->evaluated = 1;
+					$solutionsID->save();
+				}
+			}
+			//$string->corpusParseTreeSolutionID = $stringID;
+            
+            if ($responseCode === 200) {
+                $response = ['message' => 'Sesi anda sudah disimpan di cloud'];
+            } else {
+                $response = ['errors' => $string->errors];
+            }
+        }
+        $this->sendResponse($responseCode, CJSON::encode($response), 'application/json');
+    }
 
     /**
      * Partially show list of Workspace requested
@@ -242,11 +310,20 @@ class SiteController extends ControllerCore {
      * @throws CHttpException
      */
     public function actionSolutions() {
+		$corpusID = (string)Yii::app()->request->cookies['corpusID'];
+		//$userID = (string)Yii::app()->request->cookies['userID'];
         if (Yii::app()->request->isAjaxRequest && isset($_POST['documentsID'])) {
-            $this->renderPartial('partial/list-all-strings', [
-                'solutions' => $this->retrieveSolutionsByStringID(explode(',', $_POST['documentsID'])),
-                'user' => UserWeb::instance()->user()
-            ]);
+			if ($_POST['documentsID']!=''){
+				$this->renderPartial('partial/list-all-strings', [
+					'solutions' => $this->retrieveSolutionsByStringID(explode(',', $_POST['documentsID'])),
+					'user' => UserWeb::instance()->user()
+				]);
+			}else{
+				$this->renderPartial('partial/list-all-strings', [
+					'solutions' => $this->retrieveSolutionsByCorpusID($corpusID),
+					'user' => UserWeb::instance()->user()
+				]);
+			}
         } else {
             throw new CHttpException(403, "Maaf halaman ini tidak dapat diakses secara langsung");
         }
@@ -316,6 +393,10 @@ class SiteController extends ControllerCore {
         }
 
         return $solutions;
+    }
+	
+	protected function retrieveSolutionsByCorpusID($corpusID) {
+		return CorpusParseTreeSolution::model()->byCorpusParseTreeString()->limit100()->with('corpusParseTreeString')->findAll('corpusParseTreeString.corpusParseTreeID=:corpusID and evaluated = 0', [':corpusID' => $corpusID]);
     }
 
     /**
